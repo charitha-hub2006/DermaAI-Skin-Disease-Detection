@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Scan Details | DermaAI{% endblock %}
+
+{% block content %}
+<section class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4 p-md-5">
+          <h1 class="h3 mb-2">Scan Details</h1>
+          <p class="text-muted">Review the information saved for this analysis.</p>
+
+          <hr>
+                    {% if scan.image_filename %}
+            <div class="mb-4 text-center">
+              <img
+                src="{{ url_for('scan_image', scan_id=scan.id) }}"
+                alt="Uploaded skin image for this scan"
+                class="img-fluid rounded-4 border"
+                style="max-height: 380px; object-fit: contain;"
+              >
+              <p class="text-muted small mt-2 mb-0">
+                Image uploaded for this scan
+              </p>
+            </div>
+          {% else %}
+            <div class="alert alert-light border small">
+              No saved image is available for this older scan record.
+            </div>
+          {% endif %}
+
+          <dl class="row mt-4">
+            <dt class="col-sm-5 mb-2">Prediction</dt>
+            <dd class="col-sm-7 mb-3">{{ scan.prediction_name }}</dd>
+
+            <dt class="col-sm-5 mb-2">Model class code</dt>
+            <dd class="col-sm-7 mb-3">{{ scan.prediction_code }}</dd>
+
+            <dt class="col-sm-5 mb-2">Model confidence</dt>
+            <dd class="col-sm-7 mb-3">{{ "%.2f"|format(scan.confidence_percentage) }}%</dd>
+
+            <dt class="col-sm-5 mb-2">Date and time</dt>
+            <dd class="col-sm-7 mb-3">
+              {{ scan.created_at.strftime('%d %b %Y, %I:%M %p') if scan.created_at else 'Not available' }}
+            </dd>
+
+            <dt class="col-sm-5 mb-2">Scan record ID</dt>
+            <dd class="col-sm-7 mb-3">{{ scan.id }}</dd>
+          </dl>
+
+          <div class="alert alert-warning small mt-3" role="alert">
+            This is an experimental AI image classification, not a medical diagnosis.
+            Model confidence does not guarantee that the prediction is correct.
+            Consult a qualified dermatologist for medical assessment.
+          </div>
+
+          <div class="d-flex flex-wrap gap-2 mt-4">
+            <a href="{{ url_for('auth.history') }}" class="btn btn-outline-secondary">
+              Back to history
+            </a>
+
+            <form method="POST"
+                  action="{{ url_for('auth.delete_history', scan_id=scan.id) }}"
+                  onsubmit="return confirm('Delete this scan record permanently? This action cannot be undone.');">
+              <button type="submit" class="btn btn-danger">
+                Delete this record
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

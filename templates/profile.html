@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}My Profile | DermaAI{% endblock %}
+
+{% block content %}
+<section class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4 p-md-5">
+          <h1 class="h3 mb-2">My Skin-Care Profile</h1>
+          <p class="text-muted mb-4">Keep your personal skin-care information updated.</p>
+
+          <form method="POST" action="{{ url_for('auth.profile') }}">
+            <h2 class="h5 mb-3">Account details</h2>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label" for="name">Name</label>
+                <input class="form-control" id="name" value="{{ user.name }}" readonly>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label" for="email">Email</label>
+                <input class="form-control" id="email" value="{{ user.email }}" readonly>
+              </div>
+            </div>
+
+            <hr class="my-4">
+            <h2 class="h5 mb-3">Personal information</h2>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label" for="age">Age</label>
+                <input type="number" class="form-control" id="age" name="age"
+                       min="1" max="120"
+                       value="{{ user.age if user.age is not none else '' }}"
+                       placeholder="Enter your age">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label" for="gender">Gender (optional)</label>
+                <select class="form-select" id="gender" name="gender">
+                  <option value="">Prefer not to say</option>
+                  {% for option in ["Female", "Male", "Non-binary", "Other"] %}
+                  <option value="{{ option }}" {% if user.gender == option %}selected{% endif %}>{{ option }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-12 mb-3">
+                <label class="form-label" for="skin_type">Skin type</label>
+                <select class="form-select" id="skin_type" name="skin_type">
+                  <option value="">Not sure yet</option>
+                  {% for option in ["Oily", "Dry", "Combination", "Normal", "Sensitive"] %}
+                  <option value="{{ option }}" {% if user.skin_type == option %}selected{% endif %}>{{ option }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <hr class="my-4">
+            <h2 class="h5 mb-3">Skin-care history</h2>
+            <div class="mb-3">
+              <label class="form-label" for="allergies">Known allergies or sensitivities</label>
+              <textarea class="form-control" id="allergies" name="allergies"
+                        rows="2" maxlength="500"
+                        placeholder="List known allergies or sensitivities">{{ user.allergies or '' }}</textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="skincare_products">Current skin-care products</label>
+              <textarea class="form-control" id="skincare_products" name="skincare_products"
+                        rows="3" maxlength="2000"
+                        placeholder="Products you use and how often">{{ user.skincare_products or '' }}</textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="previous_skin_problems">Previous skin problems</label>
+              <textarea class="form-control" id="previous_skin_problems" name="previous_skin_problems"
+                        rows="3" maxlength="2000"
+                        placeholder="Past skin concerns or treatments">{{ user.previous_skin_problems or '' }}</textarea>
+            </div>
+            <div class="mb-4">
+              <label class="form-label" for="profile_notes">Additional notes (optional)</label>
+              <textarea class="form-control" id="profile_notes" name="profile_notes"
+                        rows="3" maxlength="2000"
+                        placeholder="Anything else you want to track">{{ user.profile_notes or '' }}</textarea>
+            </div>
+
+            <div class="alert alert-light border small">
+              This profile helps organize your skin-care history. It does not replace a dermatologist's examination or medical advice.
+            </div>
+            <div class="d-flex flex-wrap gap-2 mt-4">
+              <button type="submit" class="btn btn-derma">Save profile</button>
+              <a class="btn btn-derma-outline" href="{{ url_for('auth.dashboard') }}">Back to dashboard</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

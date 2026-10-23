@@ -1,0 +1,218 @@
+```html
+{% extends "base.html" %}
+{% block title %}Scan History | DermaAI{% endblock %}
+
+{% block content %}
+<main class="history-page">
+
+  <!-- Page heading -->
+  <section class="history-heading">
+    <div>
+      <span class="history-eyebrow">YOUR DERMAAI RECORDS</span>
+      <h1>Scan history</h1>
+      <p>Review your previous skin-image analyses in one place.</p>
+    </div>
+
+    <a href="{{ url_for('predict_page') }}" class="history-primary-button">
+      <i class="bi bi-plus-circle"></i> New analysis
+    </a>
+  </section>
+
+  <!-- Summary -->
+  <section class="history-summary">
+    <div class="history-summary-icon">
+      <i class="bi bi-clock-history"></i>
+    </div>
+
+    <div>
+      <span class="history-summary-label">SAVED ANALYSES</span>
+      <h2>
+        {{ scans|length }}
+        <span>record{% if scans|length != 1 %}s{% endif %}</span>
+      </h2>
+      <p>Your previous results, newest first.</p>
+    </div>
+  </section>
+
+  <!-- Scan history table -->
+  <section class="history-panel">
+
+    <div class="history-panel-heading">
+      <div>
+        <h2>Previous analyses</h2>
+        <p>View the uploaded image and review each record.</p>
+      </div>
+
+      <span class="history-count">{{ scans|length }} total</span>
+    </div>
+
+    {% if scans %}
+
+    <div class="history-table-wrap">
+      <table class="history-table">
+
+        <thead>
+          <tr>
+            <th scope="col">Image</th>
+            <th scope="col">Date and time</th>
+            <th scope="col">Predicted class</th>
+            <th scope="col">Class code</th>
+            <th scope="col">Model confidence</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for scan in scans %}
+
+          <tr>
+            <!-- Uploaded skin image -->
+            <td>
+              {% if scan.image_filename %}
+                <a
+                  href="{{ url_for('scan_image', scan_id=scan.id) }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Open full skin image"
+                >
+                  <img
+                    src="{{ url_for('scan_image', scan_id=scan.id) }}"
+                    alt="Uploaded skin image for scan {{ scan.id }}"
+                    loading="lazy"
+                    width="76"
+                    height="76"
+                    style="
+                      width: 76px;
+                      height: 76px;
+                      object-fit: cover;
+                      border-radius: 10px;
+                      border: 1px solid #dce5df;
+                      display: block;
+                    "
+                  >
+                </a>
+              {% else %}
+                <div
+                  class="history-code"
+                  title="No image was saved for this record"
+                >
+                  No image
+                </div>
+              {% endif %}
+            </td>
+
+            <!-- Date and time -->
+            <td>
+              <div class="history-date">
+                <i class="bi bi-calendar3"></i>
+                <span>
+                  {{ scan.created_at.strftime('%d %b %Y, %I:%M %p')
+                     if scan.created_at else 'Not available' }}
+                </span>
+              </div>
+            </td>
+
+            <!-- Prediction -->
+            <td>
+              <span class="history-prediction">
+                {{ scan.prediction_name }}
+              </span>
+            </td>
+
+            <!-- Class code -->
+            <td>
+              <span class="history-code">
+                {{ scan.prediction_code }}
+              </span>
+            </td>
+
+            <!-- Confidence -->
+            <td>
+              <span class="history-confidence">
+                {{ "%.2f"|format(scan.confidence_percentage) }}%
+              </span>
+            </td>
+
+            <!-- Actions -->
+            <td>
+              <div class="history-actions">
+
+                <a
+                  class="history-view-button"
+                  href="{{ url_for('auth.history_detail', scan_id=scan.id) }}"
+                >
+                  <i class="bi bi-eye"></i> View
+                </a>
+
+                <form
+                  method="POST"
+                  action="{{ url_for('auth.delete_history', scan_id=scan.id) }}"
+                  onsubmit="return confirm('Delete this scan record permanently? This action cannot be undone.');"
+                >
+                  <button
+                    type="submit"
+                    class="history-delete-button"
+                  >
+                    <i class="bi bi-trash3"></i> Delete
+                  </button>
+                </form>
+
+              </div>
+            </td>
+          </tr>
+
+          {% endfor %}
+        </tbody>
+
+      </table>
+    </div>
+
+    {% else %}
+
+    <!-- Empty history -->
+    <div class="history-empty">
+      <div class="history-empty-icon">
+        <i class="bi bi-images"></i>
+      </div>
+
+      <h3>No saved analyses yet</h3>
+
+      <p>
+        Your completed analyses will appear here.
+        Start by uploading a skin image for analysis.
+      </p>
+
+      <a
+        href="{{ url_for('predict_page') }}"
+        class="history-primary-button"
+      >
+        <i class="bi bi-camera"></i> Start an analysis
+      </a>
+    </div>
+
+    {% endif %}
+
+  </section>
+
+  <!-- Medical disclaimer -->
+  <section class="history-medical-note">
+    <i class="bi bi-info-circle"></i>
+    <p>
+      <strong>Medical reminder:</strong>
+      AI predictions are not medical diagnoses.
+      Consult a qualified dermatologist for a medical assessment.
+    </p>
+  </section>
+
+  <!-- Footer -->
+  <div class="history-footer">
+    <a
+      href="{{ url_for('auth.dashboard') }}"
+      class="history-back-link"
+    >
+      <i class="bi bi-arrow-left"></i> Back to dashboard
+    </a>
+  </div>
+
+</main>
+{% endblock %}

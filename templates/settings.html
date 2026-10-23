@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Settings & Privacy | DermaAI{% endblock %}
+
+{% block content %}
+<section class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4 p-md-5">
+          <h1 class="h3 mb-3">Settings & Privacy</h1>
+          <p class="text-muted">
+            Manage information about your DermaAI account.
+          </p>
+
+          <div class="mb-3">
+            <label class="form-label">Account email</label>
+            <input class="form-control"
+                   value="{{ user.email }}" readonly>
+          </div>
+
+          <p class="small text-muted">
+            Your password is stored as a hash, not as plain text.
+          </p>
+          <p class="small text-muted">
+            Additional privacy controls and account deletion
+            are not implemented yet.
+          </p>
+
+          <a class="btn btn-outline-secondary mt-2"
+             href="{{ url_for('auth.dashboard') }}">
+            Back to dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

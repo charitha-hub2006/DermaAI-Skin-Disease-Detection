@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}About the Project & Viva Preparation - DermaAI CNN{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <!-- Project Overview -->
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body p-4">
+        <h2 class="fw-bold mb-3"><i class="bi bi-info-circle text-primary me-2"></i>About the Project</h2>
+        <p class="lead text-muted">
+          <strong>Skin Disease Detection Using CNN</strong> is an end-to-end computer vision and software engineering capstone project designed to classify dermatoscopic skin lesions into diagnostic categories using deep learning.
+        </p>
+        <hr>
+        <h5 class="fw-bold mt-4">Problem Statement</h5>
+        <p class="text-secondary">
+          Skin cancers, particularly malignant melanoma, represent some of the fastest-growing oncological conditions globally. Early detection dramatically improves 5-year survival rates from under 25% to over 98%. However, access to experienced dermatologists is unevenly distributed, and visual triage under standard clinical light can result in diagnostic ambiguity. Automated Computer-Aided Diagnostic (CAD) systems using Convolutional Neural Networks offer the capability to provide rapid, objective second opinions to support clinical triage.
+        </p>
+
+        <h5 class="fw-bold mt-4">Project Objectives</h5>
+        <ul class="text-secondary">
+          <li><strong>Deep Feature Extraction:</strong> Build and train a high-capacity Convolutional Neural Network capable of learning hierarchical spatial representations (edges, textures, color gradients, and pigment network structures) directly from raw lesion pixels.</li>
+          <li><strong>Preventing Data Leakage:</strong> Implement patient-level group splitting so that images from the same patient or lesion are never split across train and test sets.</li>
+          <li><strong>Lightweight Local Deployment:</strong> Engineer a full-stack Flask web application capable of running locally on student hardware without dependency on paid cloud APIs.</li>
+          <li><strong>Software Engineering Rigor:</strong> Apply formal SDLC practices, comprehensive automated test suites (pytest), input validation, defensive error handling, and structured architecture diagrams.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Viva Questions & Answers -->
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body p-4">
+        <h3 class="fw-bold mb-3"><i class="bi bi-mortarboard text-primary me-2"></i>Viva Voce Preparation & Technical Q&A</h3>
+        <p class="text-muted small mb-4">High-yield questions frequently asked by academic faculty, external examiners, and evaluators during project defense.</p>
+
+        <div class="accordion" id="vivaAccordion">
+          <!-- Question 1 -->
+          <div class="accordion-item border-0 mb-2 shadow-sm rounded-3 overflow-hidden">
+            <h2 class="accordion-header" id="headingOne">
+              <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                Q1: Why use a Convolutional Neural Network (CNN) instead of traditional Machine Learning (e.g. SVM or Random Forest)?
+              </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#vivaAccordion">
+              <div class="accordion-body text-secondary">
+                Traditional ML algorithms require manual hand-crafted feature engineering (e.g., ABCD rules, GLCM texture analysis, color histograms), which are sensitive to lighting variations and human bias. CNNs perform end-to-end representation learning: early convolutional layers learn low-level primitives (edges, color boundaries), intermediate layers detect localized textures (pigment networks, dots, globules), and deeper layers capture high-level semantic shapes and lesion topologies.
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 2 -->
+          <div class="accordion-item border-0 mb-2 shadow-sm rounded-3 overflow-hidden">
+            <h2 class="accordion-header" id="headingTwo">
+              <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                Q2: What is data leakage and how did you prevent it in the training pipeline?
+              </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#vivaAccordion">
+              <div class="accordion-body text-secondary">
+                In medical datasets like HAM10000, multiple photographs are often taken of the same patient or lesion under different angles or magnifications. If a random train/test split is applied, images of the same patient can appear in both training and testing partitions. The model would memorize patient-specific skin features rather than learning general disease pathology, producing artificially inflated test accuracy. We prevented this by grouping splits strictly by <code>lesion_id</code>/<code>patient_id</code> so no lesion ever spans across splits.
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 3 -->
+          <div class="accordion-item border-0 mb-2 shadow-sm rounded-3 overflow-hidden">
+            <h2 class="accordion-header" id="headingThree">
+              <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                Q3: Why is Softmax used in the final output layer?
+              </button>
+            </h2>
+            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#vivaAccordion">
+              <div class="accordion-body text-secondary">
+                Softmax normalizes the raw real-valued output logits \((z_i)\) of the final dense layer into a valid categorical probability distribution where \(\sum_{j=1}^K p_j = 1\) and \(0 \le p_i \le 1\). This allows the application to report statistical confidence percentages for each diagnostic class.
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 4 -->
+          <div class="accordion-item border-0 mb-2 shadow-sm rounded-3 overflow-hidden">
+            <h2 class="accordion-header" id="headingFour">
+              <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                Q4: How does the application prevent path traversal and arbitrary file upload vulnerabilities?
+              </button>
+            </h2>
+            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#vivaAccordion">
+              <div class="accordion-body text-secondary">
+                We employ defense-in-depth:
+                <ol class="mb-0 ps-3">
+                  <li>Filenames are strictly sanitized using <code>werkzeug.utils.secure_filename</code>.</li>
+                  <li>Extensions are strictly whitelisted to <code>{'jpg', 'jpeg', 'png'}</code>.</li>
+                  <li>File streams are parsed in memory using Pillow's <code>Image.open().verify()</code> to catch malicious binaries disguised with image extensions.</li>
+                  <li>Uploads are not permanently saved to the filesystem, eliminating remote code execution vectors.</li>
+                  <li>A 16 MB maximum content limit is enforced at the Flask WSGI level.</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 5 -->
+          <div class="accordion-item border-0 shadow-sm rounded-3 overflow-hidden">
+            <h2 class="accordion-header" id="headingFive">
+              <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                Q5: Why is accuracy alone insufficient for evaluating medical classification models?
+              </button>
+            </h2>
+            <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#vivaAccordion">
+              <div class="accordion-body text-secondary">
+                Skin disease datasets suffer from severe class imbalance (e.g., Melanocytic Nevi comprise >65% of samples, whereas Dermatofibroma or Vascular lesions comprise <3%). A naive model predicting 'Nevus' for every case could achieve ~67% accuracy while missing 100% of deadly Melanomas! Therefore, clinical evaluation requires <strong>Sensitivity (Recall)</strong>, <strong>Specificity</strong>, <strong>Precision</strong>, <strong>F1-Score</strong>, and complete <strong>Confusion Matrix</strong> inspection.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Column: Tech Stack & System Properties -->
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-white py-3 border-0">
+        <h5 class="fw-bold mb-0"><i class="bi bi-stack text-primary me-2"></i>Technology Stack</h5>
+      </div>
+      <div class="card-body">
+        <ul class="list-group list-group-flush small">
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>Frontend</span>
+            <span class="badge bg-secondary-subtle text-dark">HTML5 / Bootstrap 5 / JS</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>Backend</span>
+            <span class="badge bg-secondary-subtle text-dark">Python 3 / Flask</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>Deep Learning</span>
+            <span class="badge bg-secondary-subtle text-dark">TensorFlow / Keras</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>Image Processing</span>
+            <span class="badge bg-secondary-subtle text-dark">Pillow / NumPy</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>Metrics & Eval</span>
+            <span class="badge bg-secondary-subtle text-dark">Scikit-Learn / Matplotlib</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>Test Suite</span>
+            <span class="badge bg-secondary-subtle text-dark">pytest (Unit & Integration)</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>Deployment</span>
+            <span class="badge bg-secondary-subtle text-dark">Local WSGI Server</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm bg-primary text-white p-4">
+      <h5 class="fw-bold mb-2"><i class="bi bi-person-workspace me-2"></i>Academic Profile</h5>
+      <p class="small opacity-90 mb-3">
+        Engineered for B.Tech Computer Science & Engineering degree project demonstration, viva examination, and software documentation.
+      </p>
+      <a href="{{ url_for('predict_page') }}" class="btn btn-light fw-bold text-primary">
+        Test System Inference
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

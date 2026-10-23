@@ -1,0 +1,207 @@
+
+{% extends "base.html" %}
+
+{% block title %}Analysis Results | DermaAI{% endblock %}
+
+{% block content %}
+<main class="result-page">
+
+  <!-- Page heading -->
+  <section class="result-heading">
+    <div>
+      <span class="result-eyebrow">DERMAAI · IMAGE ANALYSIS</span>
+      <h1>Your analysis results</h1>
+      <p>Review the model's output and the information below.</p>
+    </div>
+    <a href="{{ url_for('predict_page') }}" class="result-button result-button-primary">
+      <i class="bi bi-plus-circle"></i>
+      Analyze another image
+    </a>
+  </section>
+
+  <!-- Main results layout -->
+  <section class="result-layout">
+
+    <!-- Uploaded image -->
+    <article class="result-card result-image-card">
+      <div class="result-card-heading">
+        <div class="result-icon">
+          <i class="bi bi-image"></i>
+        </div>
+        <div>
+          <h2>Uploaded image</h2>
+          <p>Your image used for analysis</p>
+        </div>
+      </div>
+
+      <div class="result-image-frame">
+        <img src="{{ image_preview }}"
+             alt="Uploaded skin image analyzed by the model">
+      </div>
+
+      <div class="result-image-info">
+        <i class="bi bi-info-circle"></i>
+        <span>Image processed for the CNN model.</span>
+      </div>
+
+      <a href="{{ url_for('predict_page') }}"
+         class="result-button result-button-secondary result-full-button">
+        <i class="bi bi-arrow-repeat"></i>
+        Upload another image
+      </a>
+    </article>
+
+    <!-- Prediction information -->
+    <div class="result-details">
+
+      <article class="result-card result-prediction-card">
+        <span class="result-section-label">PRIMARY PREDICTION</span>
+
+        <div class="result-prediction-header">
+          <div>
+            <h2 class="result-class-name">{{ prediction.class_name }}</h2>
+            <p class="result-class-code">
+              Class code: {{ prediction.class_code }}
+            </p>
+          </div>
+
+          {% if "Malignant" in prediction.category %}
+            <span class="result-category result-category-warning">
+              <i class="bi bi-exclamation-triangle"></i>
+              {{ prediction.category }}
+            </span>
+          {% elif "Precancerous" in prediction.category %}
+            <span class="result-category result-category-caution">
+              <i class="bi bi-exclamation-circle"></i>
+              {{ prediction.category }}
+            </span>
+          {% else %}
+            <span class="result-category result-category-neutral">
+              <i class="bi bi-clipboard-check"></i>
+              {{ prediction.category }}
+            </span>
+          {% endif %}
+        </div>
+
+        <div class="result-confidence">
+          <div class="result-confidence-heading">
+            <div>
+              <span class="result-section-label">MODEL CONFIDENCE</span>
+              <p>Probability assigned to the predicted class</p>
+            </div>
+            <strong>{{ prediction.confidence_percentage }}%</strong>
+          </div>
+
+          <div class="result-progress-track"
+               role="progressbar"
+               aria-label="Model confidence"
+               aria-valuenow="{{ prediction.confidence_percentage }}"
+               aria-valuemin="0"
+               aria-valuemax="100">
+            <div class="result-progress-fill"
+                 style="width: {{ prediction.confidence_percentage }}%">
+            </div>
+          </div>
+
+          <p class="result-confidence-note">
+            This value represents the model's statistical output for this
+            image. It does not indicate how medically certain the prediction is.
+          </p>
+        </div>
+
+        <div class="result-description">
+          <h3><i class="bi bi-journal-medical"></i> About this prediction</h3>
+          <p>{{ prediction.description }}</p>
+        </div>
+      </article>
+
+      <!-- Probability breakdown -->
+      <article class="result-card">
+        <div class="result-card-heading result-breakdown-heading">
+          <div class="result-icon">
+            <i class="bi bi-bar-chart-line"></i>
+          </div>
+          <div>
+            <h2>Class probability breakdown</h2>
+            <p>Compare the model's outputs across all classes.</p>
+          </div>
+        </div>
+
+        <div class="result-probability-list">
+          {% for item in class_probabilities %}
+          <div class="result-probability-item
+                      {% if item.code == prediction.class_code %}
+                      result-probability-selected
+                      {% endif %}">
+
+            <div class="result-probability-top">
+              <div class="result-probability-name">
+                <span>{{ item.name }}</span>
+                <small>{{ item.code }}</small>
+                {% if item.code == prediction.class_code %}
+                  <span class="result-top-match">Predicted</span>
+                {% endif %}
+              </div>
+              <strong>{{ item.percentage }}%</strong>
+            </div>
+
+            <div class="result-progress-track result-progress-small"
+                 role="progressbar"
+                 aria-label="{{ item.name }} probability"
+                 aria-valuenow="{{ item.percentage }}"
+                 aria-valuemin="0"
+                 aria-valuemax="100">
+              <div class="result-progress-fill
+                          {% if item.code != prediction.class_code %}
+                          result-progress-muted
+                          {% endif %}"
+                   style="width: {{ item.percentage }}%">
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <p class="result-breakdown-note">
+          These values describe the model's output, not confirmed diagnoses.
+        </p>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- Medical guidance -->
+  <section class="result-medical-note" role="alert">
+    <div class="result-medical-icon">
+      <i class="bi bi-heart-pulse"></i>
+    </div>
+    <div>
+      <h2>Important medical guidance</h2>
+      <p>
+        DermaAI is an educational skin-image analysis project, not a
+        diagnostic tool. A prediction can be incorrect, even when its
+        confidence is high. Consult a qualified dermatologist for
+        assessment, especially if a spot changes in size, shape, or colour,
+        bleeds, or does not heal.
+      </p>
+      {% if disclaimer %}
+        <p class="result-disclaimer-extra">{{ disclaimer }}</p>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- Navigation -->
+  <nav class="result-bottom-actions" aria-label="Result page navigation">
+    <a href="{{ url_for('index') }}" class="result-text-link">
+      <i class="bi bi-house"></i> Home
+    </a>
+    <a href="{{ url_for('auth.dashboard') }}" class="result-text-link">
+      <i class="bi bi-grid"></i> Dashboard
+    </a>
+    <a href="{{ url_for('auth.history') }}" class="result-text-link">
+      <i class="bi bi-clock-history"></i> Scan history
+    </a>
+  </nav>
+
+</main>
+{% endblock %}

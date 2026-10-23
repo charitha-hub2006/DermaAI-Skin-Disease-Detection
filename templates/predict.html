@@ -1,0 +1,272 @@
+
+{% extends "base.html" %}
+
+{% block title %}Skin Analysis | DermaAI{% endblock %}
+
+{% block content %}
+
+<div class="analysis-page">
+
+  {% if not model_status.model_loaded %}
+  <div class="alert alert-warning shadow-sm mb-4" role="alert">
+    <h5 class="alert-heading fw-bold">
+      <i class="bi bi-exclamation-circle-fill me-2"></i>
+      Trained CNN Model Not Detected
+    </h5>
+    <p class="mb-2">
+      The application is running in standby mode because the trained model
+      was not found at <code>models/skin_disease_cnn.keras</code>.
+    </p>
+    <p class="mb-0 small">
+      Check your model file and training setup before running predictions.
+    </p>
+  </div>
+  {% endif %}
+
+  <!-- Page introduction -->
+  <section class="analysis-heading text-center mb-4">
+    <span class="reference-label">
+      <i class="bi bi-stars me-1"></i> YOUR SKIN INSIGHTS
+    </span>
+
+    <h1 class="fw-bold mt-3 mb-2">Skin Analysis</h1>
+
+    <p class="text-muted mx-auto" style="max-width: 620px;">
+      Upload a clear image to explore an experimental AI-generated
+      skin classification. Your result is not a medical diagnosis.
+    </p>
+  </section>
+
+  <!-- Upload card -->
+  <div class="row justify-content-center">
+    <div class="col-lg-9 col-xl-8">
+
+      <div class="card analysis-card border-0">
+        <div class="card-body p-3 p-md-5">
+
+          <div class="d-flex align-items-center gap-3 mb-4">
+            <div class="analysis-icon">
+              <i class="bi bi-shield-check"></i>
+            </div>
+            <div>
+              <h4 class="fw-bold mb-1">Upload your image</h4>
+              <p class="text-muted small mb-0">
+                JPG, JPEG or PNG · Maximum 16 MB
+              </p>
+            </div>
+          </div>
+
+          <div id="errorMessage"
+               class="alert alert-danger d-none"
+               role="alert"></div>
+
+          <form id="uploadForm"
+                action="{{ url_for('predict_endpoint') }}"
+                method="POST"
+                enctype="multipart/form-data">
+
+            <div class="upload-card mb-4"
+                 id="dropZone"
+                 role="button"
+                 tabindex="0"
+                 aria-label="Choose a skin image or drag and drop it here">
+
+              <input type="file"
+                     id="fileInput"
+                     name="image"
+                     class="d-none"
+                     accept=".jpg,.jpeg,.png">
+
+              <div class="upload-icon mx-auto mb-3">
+                <i class="bi bi-cloud-arrow-up"></i>
+              </div>
+
+              <h5 class="fw-bold">Drop your image here</h5>
+
+              <p class="text-muted mb-3">
+                Or
+                <span class="browse-text">browse your computer</span>
+              </p>
+
+              <span class="badge upload-format">
+                <i class="bi bi-file-earmark-image me-1"></i>
+                JPG · JPEG · PNG
+              </span>
+
+              <p class="text-muted small mt-3 mb-0">
+                Use a clear, well-lit image.
+              </p>
+            </div>
+
+            <!-- Selected image preview -->
+            <div id="previewContainer"
+                 class="preview-container d-none">
+              <img id="previewImage"
+                   class="preview-image"
+                   alt="Preview of the selected skin image">
+            </div>
+
+            <p id="fileNameDisplay"
+               class="text-center text-muted small fw-medium mb-4"></p>
+
+            <!-- Loading indicator -->
+            <div id="loadingSpinner"
+                 class="text-center my-4 d-none">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Analyzing image...</span>
+              </div>
+              <p class="mt-2 text-primary fw-semibold">
+                Processing your image...
+              </p>
+              <p class="text-muted small">
+                Please wait while the CNN model processes the upload.
+              </p>
+            </div>
+
+            <!-- Actions -->
+            <div class="d-grid gap-3 d-sm-flex justify-content-center">
+              <button type="submit"
+                      id="submitBtn"
+                      class="btn btn-primary btn-lg px-4"
+                      disabled>
+                <i class="bi bi-search me-2"></i>
+                Run Skin Analysis
+              </button>
+
+              <a href="{{ url_for('index') }}"
+                 class="btn btn-outline-secondary btn-lg px-4">
+                Cancel
+              </a>
+            </div>
+
+          </form>
+
+          <div class="privacy-note mt-4">
+            <i class="bi bi-lock-fill me-2"></i>
+            Review your project's privacy policy before uploading
+            personal or sensitive images.
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Image quality guide -->
+  <section class="reference-gallery mt-5">
+
+    <div class="text-center mb-4">
+      <span class="reference-label">IMAGE QUALITY GUIDE</span>
+
+      <h2 class="fw-bold mt-3">Choose a clear image</h2>
+
+      <p class="text-muted mx-auto" style="max-width: 620px;">
+        Follow these simple tips to choose an image suitable for
+        experimentation with the DermaAI model.
+      </p>
+    </div>
+
+    <div class="row g-4">
+
+      <div class="col-md-4">
+        <article class="reference-card h-100">
+          <div class="reference-art reference-clear">
+            <i class="bi bi-camera-fill"></i>
+            <span>Clear and focused</span>
+          </div>
+          <div class="p-4">
+            <h5 class="fw-bold">Good clarity</h5>
+            <p class="text-muted small mb-0">
+              Keep the visible area in focus and avoid camera shake.
+            </p>
+          </div>
+        </article>
+      </div>
+
+      <div class="col-md-4">
+        <article class="reference-card h-100">
+          <div class="reference-art reference-blur">
+            <i class="bi bi-eye-slash-fill"></i>
+            <span>Out of focus</span>
+          </div>
+          <div class="p-4">
+            <h5 class="fw-bold">Avoid blur</h5>
+            <p class="text-muted small mb-0">
+              Check that the image is sharp rather than blurry.
+            </p>
+          </div>
+        </article>
+      </div>
+
+      <div class="col-md-4">
+        <article class="reference-card h-100">
+          <div class="reference-art reference-dark">
+            <i class="bi bi-brightness-low-fill"></i>
+            <span>Uneven lighting</span>
+          </div>
+          <div class="p-4">
+            <h5 class="fw-bold">Use even light</h5>
+            <p class="text-muted small mb-0">
+              Avoid strong shadows, glare, and very dark images.
+            </p>
+          </div>
+        </article>
+      </div>
+
+    </div>
+
+    <p class="text-muted small text-center mt-4">
+      These cards are illustrations of image quality, not real skin
+      photographs or examples of particular diseases. AI results are
+      experimental and should not be used for diagnosis.
+    </p>
+
+  </section>
+
+  <!-- Helpful tips -->
+  <section class="tips-panel mt-4">
+    <div class="row g-3">
+
+      <div class="col-md-4">
+        <div class="tip-item">
+          <i class="bi bi-bullseye"></i>
+          <div>
+            <h6 class="fw-bold">Center the area</h6>
+            <p class="text-muted small mb-0">
+              Keep the area of interest clearly visible.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="tip-item">
+          <i class="bi bi-sun"></i>
+          <div>
+            <h6 class="fw-bold">Check the lighting</h6>
+            <p class="text-muted small mb-0">
+              Prefer even lighting without strong glare.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="tip-item">
+          <i class="bi bi-heart-pulse"></i>
+          <div>
+            <h6 class="fw-bold">Seek expert advice</h6>
+            <p class="text-muted small mb-0">
+              Consult a qualified dermatologist about skin concerns.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+{% endblock %}

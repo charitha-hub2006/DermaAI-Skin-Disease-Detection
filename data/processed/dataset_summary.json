@@ -1,0 +1,44 @@
+{
+  "total_metadata_records": 105,
+  "total_images_processed": 105,
+  "missing_images_skipped": 0,
+  "split_counts": {
+    "train": {
+      "akiec": 11,
+      "bcc": 11,
+      "bkl": 12,
+      "df": 11,
+      "mel": 11,
+      "nv": 11,
+      "vasc": 12
+    },
+    "val": {
+      "akiec": 2,
+      "bcc": 2,
+      "bkl": 2,
+      "df": 2,
+      "mel": 2,
+      "nv": 2,
+      "vasc": 2
+    },
+    "test": {
+      "akiec": 2,
+      "bcc": 2,
+      "bkl": 1,
+      "df": 2,
+      "mel": 2,
+      "nv": 2,
+      "vasc": 1
+    }
+  },
+  "classes": [
+    "akiec",
+    "bcc",
+    "bkl",
+    "df",
+    "mel",
+    "nv",
+    "vasc"
+  ],
+  "group_column_used": "lesion_id"
+}

@@ -1,0 +1,24 @@
+{
+  "model_architecture": "SkinDisease_CNN",
+  "input_shape": [
+    128,
+    128,
+    3
+  ],
+  "classes": [
+    "akiec",
+    "bcc",
+    "bkl",
+    "df",
+    "mel",
+    "nv",
+    "vasc"
+  ],
+  "num_classes": 7,
+  "epochs_trained": 2,
+  "batch_size": 32,
+  "final_train_accuracy": 0.4177215099334717,
+  "final_train_loss": 1.6829516887664795,
+  "final_val_accuracy": 0.2142857164144516,
+  "final_val_loss": 1.948298454284668
+}

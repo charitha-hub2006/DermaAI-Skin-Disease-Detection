@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Help & FAQs | DermaAI{% endblock %}
+{% block content %}
+<section class="container py-5">
+  <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4 p-md-5">
+      <h1 class="h3">Help & FAQs</h1>
+      <h2 class="h5 mt-4">Is DermaAI a medical diagnosis?</h2>
+      <p>No. Its CNN output is experimental and cannot confirm a diagnosis.</p>
+      <h2 class="h5 mt-4">What should I do about a concerning skin change?</h2>
+      <p>Consult a qualified healthcare professional for an assessment.</p>
+      <h2 class="h5 mt-4">Are previous analyses saved?</h2>
+      <p>Per-user analysis history has not been connected yet.</p>
+      <a class="btn btn-outline-secondary mt-2"
+         href="{{ url_for('index') }}">Back to home</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

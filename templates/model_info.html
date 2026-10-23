@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Model Architecture & Performance - DermaAI CNN{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-12">
+    <div class="card border-0 shadow-sm p-4 mb-4">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+          <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-cpu text-primary me-2"></i>CNN Model Architecture & Specifications</h2>
+            <p class="text-muted small mb-0">Deep Convolutional Neural Network engineered for multi-class dermatological triage</p>
+          </div>
+          <div>
+            {% if model_status.model_loaded %}
+              <span class="badge bg-success-subtle text-success fs-6 px-3 py-2 border border-success">
+                <i class="bi bi-check-circle-fill me-1"></i>Model Active & Serving
+              </span>
+            {% else %}
+              <span class="badge bg-warning-subtle text-warning-emphasis fs-6 px-3 py-2 border border-warning">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i>Model Unloaded
+              </span>
+            {% endif %}
+          </div>
+        </div>
+
+        <p class="text-secondary">
+          The classifier utilizes a multi-stage 2D Convolutional architecture designed with progressive spatial reduction and channel expansion. Each block combines \(3 \times 3\) convolutional filters, Batch Normalization for covariate shift mitigation, ReLU non-linearities, Max Pooling for translation invariance, and Dropout layers to prevent co-adaptation of feature detectors.
+        </p>
+
+        <!-- Hyperparameters Grid -->
+        <div class="row g-3 my-3">
+          <div class="col-md-3 col-6">
+            <div class="p-3 bg-light rounded-3 border text-center">
+              <span class="text-muted small d-block">Input Dimensions</span>
+              <strong class="fs-5 text-dark">128 &times; 128 &times; 3</strong>
+            </div>
+          </div>
+          <div class="col-md-3 col-6">
+            <div class="p-3 bg-light rounded-3 border text-center">
+              <span class="text-muted small d-block">Optimization Algorithm</span>
+              <strong class="fs-5 text-dark">Adam (\(\alpha=0.001\))</strong>
+            </div>
+          </div>
+          <div class="col-md-3 col-6">
+            <div class="p-3 bg-light rounded-3 border text-center">
+              <span class="text-muted small d-block">Loss Objective</span>
+              <strong class="fs-5 text-dark">Categorical Crossentropy</strong>
+            </div>
+          </div>
+          <div class="col-md-3 col-6">
+            <div class="p-3 bg-light rounded-3 border text-center">
+              <span class="text-muted small d-block">Output Activation</span>
+              <strong class="fs-5 text-dark">Softmax (7 Classes)</strong>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Left Column: Layer-by-layer breakdown -->
+  <div class="col-lg-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-header bg-white py-3 border-0">
+        <h5 class="fw-bold mb-0"><i class="bi bi-diagram-3 me-2 text-primary"></i>Structural Layer Topology</h5>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover mb-0 small">
+            <thead class="table-light">
+              <tr>
+                <th>Layer (Type)</th>
+                <th>Output Dimensions</th>
+                <th>Operation Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>InputLayer</strong></td>
+                <td>(128, 128, 3)</td>
+                <td>Raw RGB pixel tensor [0.0, 1.0]</td>
+              </tr>
+              <tr>
+                <td><strong>Augmentation</strong></td>
+                <td>(128, 128, 3)</td>
+                <td>RandomFlip, RandomRotation(0.15), Zoom(0.1)</td>
+              </tr>
+              <tr>
+                <td><strong>Conv Block 1</strong></td>
+                <td>(64, 64, 32)</td>
+                <td>2&times; Conv2D(32, 3&times;3) + BatchNorm + MaxPool(2&times;2)</td>
+              </tr>
+              <tr>
+                <td><strong>Conv Block 2</strong></td>
+                <td>(32, 32, 64)</td>
+                <td>2&times; Conv2D(64, 3&times;3) + BatchNorm + MaxPool(2&times;2)</td>
+              </tr>
+              <tr>
+                <td><strong>Conv Block 3</strong></td>
+                <td>(16, 16, 128)</td>
+                <td>2&times; Conv2D(128, 3&times;3) + BatchNorm + MaxPool(2&times;2)</td>
+              </tr>
+              <tr>
+                <td><strong>Conv Block 4</strong></td>
+                <td>(16, 16, 256)</td>
+                <td>Conv2D(256, 3&times;3) + BatchNorm</td>
+              </tr>
+              <tr>
+                <td><strong>GlobalAvgPool2D</strong></td>
+                <td>(256)</td>
+                <td>Feature map condensation & parameter reduction</td>
+              </tr>
+              <tr>
+                <td><strong>Dense Head</strong></td>
+                <td>(128)</td>
+                <td>Fully-Connected ReLU + BatchNorm + Dropout(0.4)</td>
+              </tr>
+              <tr>
+                <td><strong>Output Layer</strong></td>
+                <td>(7)</td>
+                <td>Dense Softmax (Disease categorical probabilities)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Column: Evaluation Artifacts & Plots -->
+  <div class="col-lg-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-header bg-white py-3 border-0">
+        <h5 class="fw-bold mb-0"><i class="bi bi-graph-up me-2 text-primary"></i>Empirical Model Evaluation Artifacts</h5>
+      </div>
+      <div class="card-body">
+        {% if evaluation_summary %}
+          <div class="alert alert-success border-0 small mb-3">
+            <h6 class="fw-bold mb-1"><i class="bi bi-clipboard-data me-1"></i>Held-Out Test Set Metrics</h6>
+            <div class="row text-center mt-2">
+              <div class="col-4">
+                <span class="text-muted d-block">Test Accuracy</span>
+                <span class="fw-bold fs-6">{{ evaluation_summary.accuracy_percentage }}%</span>
+              </div>
+              <div class="col-4">
+                <span class="text-muted d-block">Macro F1</span>
+                <span class="fw-bold fs-6">{{ "%.4f"|format(evaluation_summary.macro_f1) }}</span>
+              </div>
+              <div class="col-4">
+                <span class="text-muted d-block">Weighted F1</span>
+                <span class="fw-bold fs-6">{{ "%.4f"|format(evaluation_summary.weighted_f1) }}</span>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <div class="alert alert-info border-0 small mb-3">
+            <i class="bi bi-info-circle me-1"></i> Run <code>python training/evaluate.py</code> to generate test metrics and confusion matrix artifacts.
+          </div>
+        {% endif %}
+
+        {% if has_confusion_matrix %}
+          <div class="mb-3 text-center">
+            <h6 class="fw-bold small text-muted text-uppercase mb-2">Confusion Matrix Heatmap</h6>
+            <img src="{{ url_for('artifact_file', filename='confusion_matrix.png') }}" class="img-fluid rounded border shadow-sm" alt="Confusion Matrix">
+          </div>
+        {% endif %}
+
+        {% if has_training_history %}
+          <div class="text-center">
+            <h6 class="fw-bold small text-muted text-uppercase mb-2">Training Loss & Accuracy Curves</h6>
+            <img src="{{ url_for('artifact_file', filename='training_history.png') }}" class="img-fluid rounded border shadow-sm" alt="Training History">
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Engineering Limitations Section -->
+  <div class="col-12 mt-4">
+    <div class="card border-0 shadow-sm p-4">
+      <div class="card-body">
+        <h4 class="fw-bold text-dark mb-3"><i class="bi bi-exclamation-triangle text-warning me-2"></i>Engineering Limitations & Future Enhancements</h4>
+        <div class="row g-4 text-secondary">
+          <div class="col-md-6">
+            <h6 class="fw-bold text-dark">Current Architectural Limitations:</h6>
+            <ul class="small mb-0">
+              <li><strong>Resolution Trade-off:</strong> Resizing to \(128 \times 128\) pixels allows smooth CPU execution on laptops but suppresses fine microscopic pigment microstructures.</li>
+              <li><strong>Class Distribution Bias:</strong> Clinical datasets have heavy class imbalances requiring continuous cost-sensitive or focal-loss adjustments.</li>
+              <li><strong>Fitzpatrick Scale Representation:</strong> Datasets predominantly represent lighter skin phototypes (Types I-III); performance may degrade on darker skin tones without balanced multi-center cohorts.</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h6 class="fw-bold text-dark">Targeted Future Enhancements:</h6>
+            <ul class="small mb-0">
+              <li><strong>Explainable AI (Grad-CAM):</strong> Integrate Gradient-weighted Class Activation Mapping to highlight salient spatial regions guiding predictions.</li>
+              <li><strong>Multimodal Fusion:</strong> Combine visual image tensors with patient metadata (age, sex, anatomic site, family history) via tabular neural networks.</li>
+              <li><strong>Ensemble Architecture:</strong> Blend custom CNN predictions with fine-tuned MobileNetV3 and EfficientNet backbones for voting consensus.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

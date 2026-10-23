@@ -1,0 +1,396 @@
+
+{% extends "base.html" %}
+
+{% block title %}DermaAI | Smarter Skin Health Insights{% endblock %}
+
+{% block content %}
+<style>
+  .derma-home {
+    --ink: #173b35;
+    --green: #287765;
+    --mint: #eaf5ef;
+    color: var(--ink);
+  }
+
+  .derma-home .hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 28px;
+    background: linear-gradient(115deg, #edf7f0 0%, #edf7f0 54%, #dcefe4 100%);
+    padding: clamp(28px, 5vw, 64px);
+  }
+
+  .derma-home .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #246b58;
+    background: #dcefe4;
+    border-radius: 50px;
+    padding: 8px 14px;
+    font-size: .82rem;
+    font-weight: 700;
+  }
+
+  .derma-home .hero h1 {
+    color: #173b35;
+    font-size: clamp(2.3rem, 4.7vw, 4.2rem);
+    line-height: 1.1;
+    letter-spacing: -2px;
+    font-weight: 750;
+    margin-top: 22px;
+  }
+
+  .derma-home .hero-copy {
+    color: #58716a;
+    max-width: 510px;
+    font-size: 1.08rem;
+    line-height: 1.8;
+  }
+
+  .derma-home .btn-derma {
+    background: #246b58;
+    border: 1px solid #246b58;
+    color: white;
+    border-radius: 12px;
+    padding: 13px 22px;
+    font-weight: 650;
+  }
+
+  .derma-home .btn-derma:hover {
+    background: #194f42;
+    color: white;
+  }
+
+  .derma-home .btn-soft {
+    background: white;
+    color: #246b58;
+    border: 1px solid #d6e5dc;
+    border-radius: 12px;
+    padding: 13px 20px;
+    font-weight: 650;
+  }
+
+  .derma-home .hero-photo {
+    width: 100%;
+    height: 390px;
+    object-fit: cover;
+    border-radius: 22px;
+    box-shadow: 0 18px 45px rgba(29, 77, 59, .12);
+  }
+
+  .derma-home .section-heading {
+    font-size: clamp(1.65rem, 3vw, 2.3rem);
+    font-weight: 750;
+    letter-spacing: -.7px;
+    color: #173b35;
+  }
+
+  .derma-home .subheading {
+    color: #71827b;
+    line-height: 1.8;
+  }
+
+  .derma-home .benefit-card {
+    height: 100%;
+    background: #fff;
+    border: 1px solid #e5eee8;
+    border-radius: 20px;
+    padding: 26px;
+    transition: transform .2s, box-shadow .2s;
+  }
+
+  .derma-home .benefit-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(28, 68, 51, .07);
+  }
+
+  .derma-home .icon-tile {
+    width: 50px;
+    height: 50px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #eaf5ef;
+    color: #287765;
+    border-radius: 15px;
+    font-size: 1.35rem;
+    margin-bottom: 20px;
+  }
+
+  .derma-home .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #246b58;
+    color: white;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .derma-home .photo-strip {
+    overflow: hidden;
+    border-radius: 20px;
+    height: 220px;
+    background: #edf5ef;
+  }
+
+  .derma-home .photo-strip img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .derma-home .condition-tag {
+    display: inline-block;
+    background: #f0f6f2;
+    border: 1px solid #e0ece4;
+    color: #315e4e;
+    padding: 9px 15px;
+    border-radius: 50px;
+    margin: 4px;
+    font-size: .9rem;
+  }
+
+  .derma-home .notice {
+    background: #fff9e9;
+    border: 1px solid #f0e5bd;
+    color: #66552a;
+    border-radius: 16px;
+    padding: 18px 20px;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 767px) {
+    .derma-home .hero h1 {
+      letter-spacing: -1px;
+    }
+
+    .derma-home .hero-photo {
+      height: 270px;
+    }
+  }
+</style>
+
+<div class="derma-home">
+
+  <!-- Hero -->
+  <section class="hero mb-5">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <span class="eyebrow">
+          <i class="bi bi-flower1"></i>
+          YOUR SKIN HEALTH COMPANION
+        </span>
+
+        <h1>Understand your skin. Take the next step.</h1>
+
+        <p class="hero-copy mt-4 mb-4">
+          Explore an AI-powered skin image analysis experience
+          designed to help you learn about skin health and
+          understand possible patterns in an image.
+        </p>
+
+        <div class="d-flex flex-wrap gap-3">
+          <a href="{{ url_for('predict_page') }}"
+             class="btn btn-derma">
+            <i class="bi bi-camera me-2"></i>
+            Analyze a skin image
+            <i class="bi bi-arrow-up-right ms-2"></i>
+          </a>
+          <a href="#how-it-works" class="btn btn-soft">
+            How it works
+          </a>
+        </div>
+
+        <div class="d-flex flex-wrap gap-3 gap-md-4 mt-4 small"
+             style="color:#55746a">
+          <span><i class="bi bi-shield-check me-1"></i> Privacy-conscious design</span>
+          <span><i class="bi bi-laptop me-1"></i> Runs on your application</span>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <img
+          class="hero-photo"
+          src="https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=1100&q=85"
+          alt="Skincare and skin health"
+          loading="eager"
+          onerror="this.style.display='none'">
+      </div>
+    </div>
+  </section>
+
+  <!-- Intro -->
+  <section class="text-center py-4 mb-4">
+    <span class="eyebrow mb-3">A SIMPLER EXPERIENCE</span>
+    <h2 class="section-heading mt-3">Skin health information, made approachable</h2>
+    <p class="subheading mx-auto mt-3" style="max-width:650px">
+      Upload an image, review the model's output and use the
+      information as a starting point for a conversation with
+      a qualified healthcare professional.
+    </p>
+  </section>
+
+  <!-- Benefits -->
+  <section class="row g-4 mb-5">
+    <div class="col-md-4">
+      <article class="benefit-card">
+        <div class="icon-tile"><i class="bi bi-image"></i></div>
+        <h5 class="fw-bold">Simple image upload</h5>
+        <p class="subheading mb-0">
+          Start with a supported skin image using a straightforward
+          upload experience and a clear preview.
+        </p>
+      </article>
+    </div>
+
+    <div class="col-md-4">
+      <article class="benefit-card">
+        <div class="icon-tile"><i class="bi bi-graph-up"></i></div>
+        <h5 class="fw-bold">Understand the results</h5>
+        <p class="subheading mb-0">
+          Review the predicted category and model confidence scores
+          in a clear, easy-to-read format.
+        </p>
+      </article>
+    </div>
+
+    <div class="col-md-4">
+      <article class="benefit-card">
+        <div class="icon-tile"><i class="bi bi-person-check"></i></div>
+        <h5 class="fw-bold">Know your next step</h5>
+        <p class="subheading mb-0">
+          Learn why a model result is not a diagnosis and when
+          to seek an assessment from a dermatologist.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section id="how-it-works" class="py-5 mb-4">
+    <div class="text-center mb-5">
+      <span class="eyebrow">THREE SIMPLE STEPS</span>
+      <h2 class="section-heading mt-3">How it works</h2>
+      <p class="subheading">
+        A clear process from image upload to model results.
+      </p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="benefit-card">
+          <span class="step-number">1</span>
+          <h5 class="fw-bold">Choose an image</h5>
+          <p class="subheading mb-0">
+            Select a supported image file and check the preview
+            before submitting it for analysis.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="benefit-card">
+          <span class="step-number">2</span>
+          <h5 class="fw-bold">Let the model analyze</h5>
+          <p class="subheading mb-0">
+            The application prepares the image and passes it
+            to the trained neural network.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="benefit-card">
+          <span class="step-number">3</span>
+          <h5 class="fw-bold">Review the output</h5>
+          <p class="subheading mb-0">
+            See the model's predicted class and available scores.
+            Seek professional advice about skin concerns.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Visual section -->
+  <section class="row align-items-center g-4 py-4 mb-5">
+    <div class="col-lg-5">
+      <h2 class="section-heading">Make informed decisions about your skin health.</h2>
+      <p class="subheading mt-3">
+        Skin changes can have many causes. Understanding your
+        concerns and getting the right professional advice
+        matters more than a single image prediction.
+      </p>
+      <a href="{{ url_for('predict_page') }}" class="btn btn-derma mt-2">
+        Get started <i class="bi bi-arrow-right ms-2"></i>
+      </a>
+    </div>
+
+    <div class="col-lg-7">
+      <div class="row g-3">
+        <div class="col-6">
+          <div class="photo-strip">
+            <img
+              src="https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?auto=format&fit=crop&w=650&q=80"
+              alt="Skincare products and self-care"
+              loading="lazy"
+              onerror="this.style.display='none'">
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="photo-strip">
+            <img
+              src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=650&q=80"
+              alt="Professional skincare treatment"
+              loading="lazy"
+              onerror="this.style.display='none'">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Supported categories -->
+  <section class="text-center py-4 mb-5">
+    <h2 class="section-heading">Explore supported image categories</h2>
+    <p class="subheading mx-auto mt-3" style="max-width:650px">
+      The current model was configured for these seven categories.
+      Its predictions may be incorrect, and it may not recognize
+      conditions outside its training scope.
+    </p>
+
+    <div class="mt-4">
+      <span class="condition-tag">Melanoma</span>
+      <span class="condition-tag">Basal cell carcinoma</span>
+      <span class="condition-tag">Actinic keratoses / intraepithelial carcinoma</span>
+      <span class="condition-tag">Melanocytic nevi</span>
+      <span class="condition-tag">Benign keratosis-like lesions</span>
+      <span class="condition-tag">Dermatofibroma</span>
+      <span class="condition-tag">Vascular lesions</span>
+    </div>
+  </section>
+
+  <!-- Safety notice -->
+  <section class="notice mb-4">
+    <div class="d-flex gap-3 align-items-start">
+      <i class="bi bi-info-circle-fill fs-4"></i>
+      <div>
+        <strong>Important health information</strong>
+        <p class="mb-0 mt-1">
+          DermaAI is an experimental image-classification tool for
+          educational use. It cannot diagnose skin conditions,
+          rule out cancer or replace a dermatologist. If you notice
+          a new, changing, bleeding or concerning skin lesion,
+          seek advice from a qualified healthcare professional.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

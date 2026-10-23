@@ -1,0 +1,275 @@
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard | DermaAI{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+
+    <!-- Welcome section -->
+    <header class="dashboard-welcome">
+        <div>
+            <p class="dashboard-eyebrow">YOUR PERSONAL SPACE</p>
+            <h1>Welcome back, {{ user.name }}!</h1>
+            <p class="welcome-description">
+                Your skin analysis activity, organized in one place.
+            </p>
+        </div>
+
+        <a class="dashboard-primary-button"
+           href="{{ url_for('predict_page') }}">
+            <i class="bi bi-plus-lg"></i>
+            New analysis
+        </a>
+    </header>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="dashboard-flash" role="status">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endwith %}
+
+    <!-- Statistics cards -->
+    <section class="dashboard-stats" aria-label="Scan statistics">
+
+        <article class="stat-card stat-card-green">
+            <div class="stat-card-top">
+                <span class="stat-icon">
+                    <i class="bi bi-activity"></i>
+                </span>
+                <span class="stat-caption">YOUR ACTIVITY</span>
+            </div>
+
+            <p class="stat-label">Total scans</p>
+            <h2>{{ total_scans }}</h2>
+            <p class="stat-description">Scans saved to your account</p>
+        </article>
+
+        <article class="stat-card">
+            <div class="stat-card-top">
+                <span class="stat-icon">
+                    <i class="bi bi-clipboard2-pulse"></i>
+                </span>
+                <span class="stat-caption">LATEST RESULT</span>
+            </div>
+
+            <p class="stat-label">Latest prediction</p>
+
+            {% if latest_scan %}
+                <h2 class="stat-result">
+                    {{ latest_scan.prediction_name }}
+                </h2>
+                <p class="stat-description">
+                    {{ "%.1f"|format(latest_scan.confidence_percentage) }}%
+                    model confidence
+                </p>
+            {% else %}
+                <h2 class="stat-result">Not yet</h2>
+                <p class="stat-description">
+                    Your first scan will appear here.
+                </p>
+            {% endif %}
+        </article>
+
+        <article class="stat-card">
+            <div class="stat-card-top">
+                <span class="stat-icon">
+                    <i class="bi bi-clock-history"></i>
+                </span>
+                <span class="stat-caption">RECENT ACTIVITY</span>
+            </div>
+
+            <p class="stat-label">Recent scans</p>
+            <h2>{{ recent_scans|length }}</h2>
+            <p class="stat-description">Up to five latest records</p>
+        </article>
+
+    </section>
+
+    <!-- Recent scan history -->
+    <section class="dashboard-panel">
+
+        <div class="dashboard-section-heading">
+            <div>
+                <p class="dashboard-eyebrow">YOUR RECORDS</p>
+                <h2>Recent scan results</h2>
+                <p class="section-description">
+                    A quick look at your latest saved predictions.
+                </p>
+            </div>
+
+            <a class="dashboard-text-link"
+               href="{{ url_for('auth.history') }}">
+                View full history
+                <i class="bi bi-arrow-up-right"></i>
+            </a>
+        </div>
+
+        {% if recent_scans %}
+            <div class="dashboard-table-wrapper">
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Prediction</th>
+                            <th>Model code</th>
+                            <th>Confidence</th>
+                            <th>Date and time</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for scan in recent_scans %}
+                            <tr>
+                                <td>
+                                    <span class="prediction-name">
+                                        {{ scan.prediction_name }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="prediction-code">
+                                        {{ scan.prediction_code }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="confidence-value">
+                                        {{ "%.1f"|format(scan.confidence_percentage) }}%
+                                    </span>
+                                </td>
+
+                                <td class="scan-date">
+                                    {{ scan.created_at.strftime("%d %b %Y, %I:%M %p")
+                                       if scan.created_at else "Not available" }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        {% else %}
+            <div class="dashboard-empty-state">
+                <div class="empty-state-icon">
+                    <i class="bi bi-image"></i>
+                </div>
+
+                <h3>Your scan history starts here</h3>
+                <p>
+                    You haven't saved any scans yet. Start an analysis
+                    to see your results here.
+                </p>
+
+                <a class="dashboard-primary-button"
+                   href="{{ url_for('predict_page') }}">
+                    <i class="bi bi-upload"></i>
+                    Start your first analysis
+                </a>
+            </div>
+        {% endif %}
+
+    </section>
+
+    <!-- Quick action cards -->
+    <section class="dashboard-section">
+        <div class="dashboard-section-heading">
+            <div>
+                <p class="dashboard-eyebrow">QUICK ACCESS</p>
+                <h2>What would you like to do?</h2>
+            </div>
+        </div>
+
+        <div class="dashboard-actions-grid">
+
+            <article class="dashboard-action-card">
+                <div class="action-card-icon">
+                    <i class="bi bi-camera"></i>
+                </div>
+
+                <h3>Skin analysis</h3>
+                <p>
+                    Upload an image to explore an experimental CNN
+                    skin classification.
+                </p>
+
+                <a class="dashboard-text-link"
+                   href="{{ url_for('predict_page') }}">
+                    Start an analysis
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </article>
+
+            <article class="dashboard-action-card">
+                <div class="action-card-icon action-icon-sand">
+                    <i class="bi bi-book"></i>
+                </div>
+
+                <h3>Skin-health guides</h3>
+                <p>
+                    Explore general information about skin conditions
+                    and skin health.
+                </p>
+
+                <a class="dashboard-text-link"
+                   href="{{ url_for('about') }}">
+                    Explore information
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </article>
+
+            <article class="dashboard-action-card">
+                <div class="action-card-icon action-icon-sage">
+                    <i class="bi bi-person"></i>
+                </div>
+
+                <h3>Your account</h3>
+                <p class="account-detail">
+                    <strong>Name:</strong> {{ user.name }}
+                </p>
+                <p class="account-detail">
+                    <strong>Email:</strong> {{ user.email }}
+                </p>
+
+                <a class="dashboard-text-link"
+                   href="{{ url_for('auth.profile') }}">
+                    View profile
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </article>
+
+        </div>
+    </section>
+
+    <!-- Medical disclaimer -->
+    <aside class="dashboard-medical-note">
+        <div class="medical-note-icon">
+            <i class="bi bi-info-circle"></i>
+        </div>
+
+        <div>
+            <h3>A gentle reminder</h3>
+            <p>
+                DermaAI provides experimental image classifications,
+                not medical diagnoses. Model confidence is not the
+                same as diagnostic certainty. Consult a qualified
+                healthcare professional about concerning, persistent,
+                or changing skin symptoms.
+            </p>
+        </div>
+    </aside>
+
+    <!-- Logout -->
+    <div class="dashboard-footer">
+        <form method="POST" action="{{ url_for('auth.logout') }}">
+            <button class="dashboard-logout-button" type="submit">
+                <i class="bi bi-box-arrow-right"></i>
+                Log out
+            </button>
+        </form>
+    </div>
+
+</section>
+{% endblock %}

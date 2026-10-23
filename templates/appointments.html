@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Appointments | DermaAI{% endblock %}
+{% block content %}
+<section class="container py-5">
+  <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4 p-md-5">
+      <h1 class="h3">Appointments</h1>
+      <p class="text-muted">Manage your dermatologist appointments.</p>
+      <p>Appointment booking and tracking are not connected yet.</p>
+      <a class="btn btn-derma" href="{{ url_for('doctors.directory') }}">
+        Find a dermatologist
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}
